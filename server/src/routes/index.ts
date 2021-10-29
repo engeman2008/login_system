@@ -1,19 +1,36 @@
 import { Router } from 'express';
-import ModelController from '../controllers/model.controller';
+import connectEnsureLogin from 'connect-ensure-login';
+
+import LoginController from '../controllers/auth/login.controller';
+import RegisterController from '../controllers/auth/register.controller';
+
+import DashboardController from '../controllers/dashboard.controller';
 
 const router = Router();
 
-// export const register = (app: express.Application) => {
-const modelController = new ModelController();
+const loginController = new LoginController();
+const registerController = new RegisterController();
 
-// Get a model as JSON
-router.get('/model/:modelId', modelController.getModelById);
+const dashboardController = new DashboardController();
 
-// Creates a model by sending it's JSON and returns the id
-router.post('/create-model', modelController.createModel);
-// app.post('/create-model', modelController.createModel);
+router.get('/', (req, res) => {
+  if (req.user) {
+    res.redirect('/dashboard');
+  }
+  res.redirect('/login');
+});
 
-// Accepts changes to the model via 'deltas')
-router.post('/model/:modelId/deltas', modelController.modelDeltas);
+router.get('/login', loginController.getLogin);
+router.post('/login', loginController.postLogin);
+
+router.get('/signup', registerController.getSignup);
+router.post('/signup', registerController.postSignup);
+
+router.get('/forget-password', registerController.forgetPassword);
+router.post('/reset-password', registerController.resetPassword);
+
+router.get('/logout', loginController.postLogout);
+
+router.get('/dashboard', connectEnsureLogin.ensureLoggedIn(), dashboardController.index);
 
 export default router;
