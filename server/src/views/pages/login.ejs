@@ -2,14 +2,17 @@
 <html lang="en">
 
 <head>
+    <title>Login</title>
     <%- include('../partials/head'); %>
-        <link rel="stylesheet" type="text/css" href="css/login.css" />
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
 </head>
 
 <body>
 
     <div id="logreg-forms">
-        <form class="form-signin">
+        <%- include('../partials/flash_messages'); %>
+
+        <form class="form-signin" method="POST" action="/login">
             <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
             <div class="social-login">
                 <button class="btn facebook-btn social-btn" type="button"><span><i class="fab fa-facebook-f"></i> Sign

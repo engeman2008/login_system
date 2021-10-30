@@ -6,9 +6,10 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import session from 'express-session';
-import passport from 'passport'; // authorization
+import passport from 'passport';
+import './config/passport';
 
-import { flash } from 'express-flash-message';
+import flash from 'connect-flash';
 
 import errorMiddleware from './middlewares/error.middleware';
 import db from './models';
@@ -45,8 +46,9 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use(flash());
-// Configure routes
+
 app.use(routes);
 
 app.use(errorMiddleware);

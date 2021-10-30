@@ -4,5 +4,6 @@ declare class LoginController {
     userService: UserService;
     getLogin: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     postLogin: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    postLogout: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
 export default LoginController;

@@ -2,13 +2,17 @@
 <html lang="en">
 
 <head>
+    <title>Register</title>
+
     <%- include('../partials/head'); %>
-        <link rel="stylesheet" type="text/css" href="css/login.css" />
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
 </head>
 
 <body>
     <div id="logreg-forms">
-        <form action="/signup/" class="form-signup">
+        <%- include('../partials/flash_messages'); %>
+
+        <form action="/signup" class="form-signup">
             <div class="social-login">
                 <button class="btn facebook-btn social-btn" type="button"><span><i class="fab fa-facebook-f"></i> Sign
                         up with Facebook</span> </button>
