@@ -10,24 +10,21 @@ const Activation = db.activations;
 class ActivateController {
   public activate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { userId, activationCode } = req.params;
-    console.log(userId);
-    console.log(activationCode);
 
     const user = await User.findByPk(userId);
-    if (!user) { return next('User not found'); }
+    if (!user) { next('User not found'); }
 
-    const activation = Activation.findOne({ where: { user_id: userId, code: activationCode } });
-    if (!activation) { return next('We were unable to find a user for this token.'); }
+    const activation = await Activation.findOne(
+      { where: { user_id: userId, code: activationCode } },
+    );
+    if (!activation) { next('We were unable to find a user for this token.'); }
 
-    console.log(activation.completed);
-
-    if (activation.completed) { return next('This user has already been verified.'); }
+    if (activation.completed) { next('This user has already been verified.'); }
 
     try {
-      Activation.update(
-        { completed: true, completed_at: Date.now() },
-        { where: { user_id: userId, code: activationCode } },
-      );
+      activation.completed = true;
+      activation.completed_at = Date.now();
+      await activation.save();
       console.log(`updated record ${JSON.stringify(activation, null, 2)}`);
     } catch (error) {
       console.log(error);
@@ -37,14 +34,14 @@ class ActivateController {
 
     passport.authenticate('local', (err, userr, info) => {
       if (err) {
-        next(err);
+        return next(err);
       }
       if (!user) {
-        res.redirect('/login');
+        return res.redirect('/login');
       }
       req.logIn(user, (error) => {
         if (error) {
-          next(err);
+          return next(err);
         }
         return res.redirect('/');
       });

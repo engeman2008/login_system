@@ -22,6 +22,6 @@ db.users.hasMany(db.activations, { as: 'activations' });
 db.activations.belongsTo(db.users, {
   foreignKey: 'user_id',
   as: 'user',
-});
+}); // ondelete cascase
 
 export default db;

@@ -2,7 +2,7 @@
 /* eslint-disable prefer-promise-reject-errors */
 import { Request, Response } from 'express';
 import {
-  check, validationResult, CustomValidator,
+  body, check, validationResult, CustomValidator,
 } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
@@ -20,15 +20,17 @@ class RegisterController {
     if (req.user) {
       return res.redirect('/');
     }
-    res.render('pages/signup.ejs', { messages: req.flash() });
+    res.render('pages/signup.ejs', { data: req.flash() });
   }
 
   public postSignup = async (req: Request, res: Response): Promise<void> => {
-    const errors = await this.validateRequest(req);
+    const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      const extractedErrors: any = errors.array().map((err) => extractedErrors.push(`${err.param} : ${err.msg}`));
+      const extractedErrors: any = [];
+      errors.array().map((err) => extractedErrors.push(`${err.param} : ${err.msg}`));
       req.flash('error', extractedErrors);
+      req.flash('oldInput', req.body);
       return res.redirect('/signup');
     }
 
@@ -53,16 +55,7 @@ class RegisterController {
       completed: false,
     });
 
-    const link = `http://${req.headers.host}/activate/${user.id}/${activation.code}`;
-
-    const data = await ejs.renderFile(path.join(__dirname, '../..', 'views/emails/verification.ejs'), { link, user });
-
-    const MailOptions = {
-      from: '"Eman Mohammed" <eman.cse2008@gmail.com>',
-      to: req.body.email,
-      subject: 'AVL Account verification',
-      html: data,
-    };
+    const MailOptions = await this.prepareMailOptions(req, user, activation);
 
     this.sendEmail(MailOptions, () => res.redirect('/')); // redirect to info page with
   }
@@ -76,20 +69,37 @@ class RegisterController {
     async (): Promise<void> => {
     }
 
-  private validateRequest = async (req: Request) => {
-    const isEmailExists: CustomValidator = (value) => User.findOne({ where: { email: value } })
-      .then((existingUser: any) => {
-        if (existingUser) {
-          return Promise.reject('E-mail is already in use.');
-        }
-      });
+  public validate = (method: string) => {
+    switch (method) {
+      case 'signup': {
+        const isEmailExists: CustomValidator = (value) => User.findOne({ where: { email: value } })
+          .then((existingUser: any) => {
+            if (existingUser) {
+              return Promise.reject('E-mail is already in use.');
+            }
+          });
+        return [
+          body('name', 'Username must be at least 2 chars long.').isLength({ min: 2 }),
+          body('email', 'Email is not valid').isEmail().custom(isEmailExists),
+          body('password', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i'),
+          body('confirmPassword', 'Passwords do not match').equals('password'),
+        ];
+      }
+      default:
+        return [];
+    }
+  }
 
-    await check('name', 'Username must be at least 2 chars long.').isLength({ min: 2 }).run(req);
-    await check('email', 'Email is not valid').isEmail().custom(isEmailExists).run(req);
-    await check('password', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i').run(req);
-    await check('confirmPassword', 'Passwords do not match').equals(req.body.password).run(req);
+  private prepareMailOptions = async (req: Request, user: any, activation: any) => {
+    const link = `http://${req.headers.host}/activate/${user.id}/${activation.code}`;
+    const data = await ejs.renderFile(path.join(__dirname, '../..', 'views/emails/verification.ejs'), { link, user });
 
-    return validationResult(req);
+    return {
+      from: '"Eman Mohammed" <eman.cse2008@gmail.com>',
+      to: req.body.email,
+      subject: 'AVL Account verification',
+      html: data,
+    };
   }
 
   private sendEmail = (MailOptions: {}, callback: any) => {

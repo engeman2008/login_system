@@ -53,7 +53,7 @@ app.use(routes);
 
 // Handling non matching request from the client
 app.use((req, res) => {
-  res.status(404).render('errors/400');
+  res.redirect('/404');
 });
 
 app.use(errorMiddleware);

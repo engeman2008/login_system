@@ -1,8 +1,8 @@
-<% if (typeof messages !=='undefined' ){ %>
-  <% if(messages.error){ %>
+<% if (typeof data !=='undefined' ){ %>
+  <% if(data.error){ %>
     <br />
     <div class="alert alert-danger">
-      <% messages.error.forEach(error=> { %> <%= error %><br />
+      <% data.error.forEach(error=> { %> <%= error %><br />
           <% }) %>
     </div>
     <% } %>
