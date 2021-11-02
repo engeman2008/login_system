@@ -51,6 +51,11 @@ app.use(flash());
 
 app.use(routes);
 
+// Handling non matching request from the client
+app.use((req, res) => {
+  res.status(404).render('errors/400');
+});
+
 app.use(errorMiddleware);
 
 // db.sequelize.sync();

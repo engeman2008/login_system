@@ -14,15 +14,14 @@ class ActivateController {
     console.log(activationCode);
 
     const user = await User.findByPk(userId);
-    if (!user) { throw new Error('User not found'); }
+    if (!user) { return next('User not found'); }
 
     const activation = Activation.findOne({ where: { user_id: userId, code: activationCode } });
-    if (!activation) { throw new Error('We were unable to find a user for this token.'); }
+    if (!activation) { return next('We were unable to find a user for this token.'); }
 
-    console.log(activation);
     console.log(activation.completed);
 
-    if (activation.completed) { throw new Error('This user has already been verified.'); }
+    if (activation.completed) { return next('This user has already been verified.'); }
 
     try {
       Activation.update(
@@ -32,7 +31,7 @@ class ActivateController {
       console.log(`updated record ${JSON.stringify(activation, null, 2)}`);
     } catch (error) {
       console.log(error);
-      throw new Error(error as string);
+      next(error as string);
     }
     console.log('The account has been verified. Please log in.');
 
