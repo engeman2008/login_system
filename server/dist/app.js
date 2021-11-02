@@ -10,7 +10,7 @@ const path_1 = tslib_1.__importDefault(require("path"));
 const express_session_1 = tslib_1.__importDefault(require("express-session"));
 const passport_1 = tslib_1.__importDefault(require("passport"));
 require("./config/passport");
-const express_flash_message_1 = require("express-flash-message");
+const connect_flash_1 = tslib_1.__importDefault(require("connect-flash"));
 const error_middleware_1 = tslib_1.__importDefault(require("./middlewares/error.middleware"));
 const models_1 = tslib_1.__importDefault(require("./models"));
 const index_1 = tslib_1.__importDefault(require("./routes/index"));
@@ -39,7 +39,7 @@ app.use(express_session_1.default({
 }));
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
-app.use(express_flash_message_1.flash());
+app.use(connect_flash_1.default());
 app.use(index_1.default);
 app.use(error_middleware_1.default);
 // db.sequelize.sync();

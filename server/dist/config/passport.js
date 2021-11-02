@@ -12,7 +12,6 @@ passport_1.default.serializeUser((user, done) => {
 passport_1.default.deserializeUser((user, done) => {
     done(null, user);
 });
-console.log('hello');
 passport_1.default.use(new passport_local_1.default.Strategy({
     usernameField: 'email',
     passwordField: 'password',

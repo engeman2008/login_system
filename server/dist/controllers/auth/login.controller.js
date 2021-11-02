@@ -7,34 +7,15 @@ class LoginController {
     constructor() {
         this.userService = new user_service_1.default();
         this.getLogin = (req, res, next) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const isLoginFailed = typeof req.query.login_failed !== 'undefined';
-            console.log(isLoginFailed);
-            if (isLoginFailed) {
-                req.flash('validation_errors', 'Login has failed.');
-            }
-            const messages = yield req.consumeFlash('validation_errors');
-            console.log(messages);
-            res.render('pages/login.ejs', {
-                messages,
-            });
+            res.render('pages/login.ejs', { messages: req.flash() });
         });
         this.postLogin = (req, res, next) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             passport_1.default.authenticate('local', {
-                failureRedirect: '/login?login_failed',
+                failureRedirect: '/login',
                 successRedirect: '/dashboard',
                 failureFlash: 'Invalid username or password.',
             })(req, res, next);
-            // passport.authenticate('local', {
-            //   failureRedirect: '/login?login_failed',
-            //   successRedirect:
-            // '/dashboard',
-            //   failureFlash: 'Invalid username or password.',
-            // });
             // res.redirect('/dashboard');
-            // passport.authenticate('local', { successRedirect: '/',
-            // failureRedirect: '/login' , failureFlash: true}));
-            // passport.authenticate('local', { failureFlash: 'Invalid username or password.' });
-            // passport.authenticate('local', { successFlash: 'Welcome!' });
         });
         this.postLogout = (req, res, next) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             req.logout();

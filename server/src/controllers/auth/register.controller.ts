@@ -1,44 +1,34 @@
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-promise-reject-errors */
-/* eslint-disable no-unused-vars */
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import {
-  body, check, validationResult, CustomValidator,
+  check, validationResult, CustomValidator,
 } from 'express-validator';
 import bcrypt from 'bcryptjs';
-import passport from 'passport';
-import UserService from '../../services/user.service';
+import crypto from 'crypto';
+import ejs from 'ejs';
+import path from 'path';
 
-const { User } = require('../../models/index');
+import db from '../../models/index';
+import MailTrapTransport from '../../config/email.config';
+
+const User = db.users;
+const Activation = db.activations;
 
 class RegisterController {
-  public userService = new UserService();
-
-  public getSignup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getSignup = async (req: Request, res: Response): Promise<void> => {
     if (req.user) {
       return res.redirect('/');
     }
-    res.render('pages/signup.ejs');
+    res.render('pages/signup.ejs', { messages: req.flash() });
   }
 
-  public postSignup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log('hi');
-    const isEmailExists: CustomValidator = (value) => User.findOne({ where: { email: value } })
-      .then((existingUser: any) => {
-        if (existingUser) {
-          return Promise.reject('E-mail is already in use.');
-        }
-      });
-
-    await check('name', 'Username must be at least 2 chars long.').isLength({ min: 2 }).run(req);
-    await check('email', 'Email is not valid').isEmail().custom(isEmailExists).run(req);
-    await check('password', 'Password must be at least 4 characters long').isLength({ min: 4 }).run(req);
-    await check('confirmPassword', 'Passwords do not match').equals(req.body.password).run(req);
-
-    const errors = validationResult(req);
+  public postSignup = async (req: Request, res: Response): Promise<void> => {
+    const errors = await this.validateRequest(req);
 
     if (!errors.isEmpty()) {
-      req.flash('errors', errors.array() as string[]);
+      const extractedErrors: any = errors.array().map((err) => extractedErrors.push(`${err.param} : ${err.msg}`));
+      req.flash('error', extractedErrors);
       return res.redirect('/signup');
     }
 
@@ -50,31 +40,68 @@ class RegisterController {
       password: hashed,
       registration_type: 'email',
     });
+
+    if (!user) {
+      req.flash('error', 'Failed to create user, please try again');
+      return res.redirect('/signup');
+    }
     console.log(`created user is ${user.name}`);
 
-    passport.authenticate('local', (err, userr, info) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return res.redirect('/login');
-      }
-      req.logIn(user, (error) => {
-        if (error) {
-          return next(err);
-        }
-        return res.redirect('/');
-      });
-    })(req, res, next);
+    const activation = await Activation.create({
+      user_id: user.id,
+      code: crypto.randomBytes(20).toString('hex'),
+      completed: false,
+    });
+
+    const link = `http://${req.headers.host}/activate/${user.id}/${activation.code}`;
+
+    const data = await ejs.renderFile(path.join(__dirname, '../..', 'views/emails/verification.ejs'), { link, user });
+
+    const MailOptions = {
+      from: '"Eman Mohammed" <eman.cse2008@gmail.com>',
+      to: req.body.email,
+      subject: 'AVL Account verification',
+      html: data,
+    };
+
+    this.sendEmail(MailOptions, () => res.redirect('/')); // redirect to info page with
   }
 
   public forgetPassword =
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    res.render('pages/reset-password.ejs');
-  }
+    async (req: Request, res: Response): Promise<void> => {
+      res.render('pages/reset-password.ejs');
+    }
 
   public resetPassword =
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async (): Promise<void> => {
+    }
+
+  private validateRequest = async (req: Request) => {
+    const isEmailExists: CustomValidator = (value) => User.findOne({ where: { email: value } })
+      .then((existingUser: any) => {
+        if (existingUser) {
+          return Promise.reject('E-mail is already in use.');
+        }
+      });
+
+    await check('name', 'Username must be at least 2 chars long.').isLength({ min: 2 }).run(req);
+    await check('email', 'Email is not valid').isEmail().custom(isEmailExists).run(req);
+    await check('password', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i').run(req);
+    await check('confirmPassword', 'Passwords do not match').equals(req.body.password).run(req);
+
+    return validationResult(req);
+  }
+
+  private sendEmail = (MailOptions: {}, callback: any) => {
+    MailTrapTransport.sendMail(MailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(`Message sent: ${info.response}`);
+        callback();
+      }
+    });
   }
 }
+
 export default RegisterController;

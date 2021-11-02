@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import session from 'express-session';
 import passport from 'passport';
-import './config/passport';
+import './config/passport.config';
 
 import flash from 'connect-flash';
 
