@@ -8,6 +8,7 @@ import PasswordController from '../controllers/auth/password.controller';
 
 import DashboardController from '../controllers/dashboard.controller';
 import ErrorController from '../controllers/error.controller';
+import UserController from '../controllers/user.controller';
 
 const router = Router();
 
@@ -17,6 +18,7 @@ const activateController = new ActivateController();
 const passwordController = new PasswordController();
 const dashboardController = new DashboardController();
 const errorController = new ErrorController();
+const userController = new UserController();
 
 router.get('/', (req, res) => {
   if (req.user) {
@@ -43,5 +45,7 @@ router.post('/reset-password', passwordController.resetPassword);
 router.get('/send-verify-email', connectEnsureLogin.ensureLoggedIn(), registerController.resendEmail);
 router.get('/welcome', connectEnsureLogin.ensureLoggedIn(), dashboardController.welcome);
 router.get('/dashboard', connectEnsureLogin.ensureLoggedIn(), dashboardController.index);
+router.get('/profile', connectEnsureLogin.ensureLoggedIn(), userController.profile);
+router.post('/profile', connectEnsureLogin.ensureLoggedIn(), userController.update);
 
 export default router;

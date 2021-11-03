@@ -6,7 +6,6 @@ import passportLocal from 'passport-local';
 import db from '../models/index';
 
 const User = db.users;
-const Activation = db.activations;
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -31,13 +30,6 @@ passport.use(
       if (!user) {
         return done(null, false, { message: `Email ${username} not found.` });
       }
-      // const activation = await Activation.findOne({
-      //   where: { user_id: user.id },
-      // });
-
-      // if (!activation || (activation && !activation.completed)) {
-      //   return done(null, false, { message: 'Your account is pending, Please activate your account first.' });
-      // }
 
       bcrypt.compare(password, user.password, (err, res) => {
         if (res) {
