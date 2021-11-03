@@ -13,5 +13,10 @@ class DashboardController {
    <a href="/logout">Log Out</a><br><br>
    <a href="/secret">Members Only</a>`);
     }
+
+    public welcome = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+      const user = req.user as typeof User;
+      res.render('pages/welcome.ejs', { name: user.name });
+    }
 }
 export default DashboardController;

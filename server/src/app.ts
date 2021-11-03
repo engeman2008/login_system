@@ -12,6 +12,8 @@ import './config/passport.config';
 import flash from 'connect-flash';
 
 import errorMiddleware from './middlewares/error.middleware';
+import activationMiddleware from './middlewares/activation.middleware';
+
 import db from './models';
 import routes from './routes/index';
 
@@ -49,6 +51,8 @@ app.use(passport.session());
 
 app.use(flash());
 
+app.use(activationMiddleware);
+
 app.use(routes);
 
 // Handling non matching request from the client
@@ -60,7 +64,7 @@ app.use(errorMiddleware);
 
 // db.sequelize.sync();
 // for dev to drop existing tables and resync
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync({ force: false }).then(() => {
   console.log('Drop and re-sync db.');
 });
 

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Error</title>
+    <%- include('../partials/head'); %>
+    <link rel="stylesheet" type="text/css" href="/css/error.css" />
+</head>
+
+<body>
+
+   <h1></h1>
+   <div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h2>Thanks <%= name %> for signing up with us.</h2>
+                <div class="error-details">
+                    Your account have been created, an activation email have been sent to your email .
+                    <br/>
+                    Please check your inbox to activate the account!. 
+                </div>
+                <div class="error-actions">
+                    <a href="/send-verify-email" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>
+                        Resend Email Verification </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
