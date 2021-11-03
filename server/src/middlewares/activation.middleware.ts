@@ -10,6 +10,8 @@ const Activation = db.activations;
 
 const isActivated = async (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as typeof User;
+  if (req.path === '/send-verify-email' || req.path.includes('activate')) return next();
+
   if (!user) return next();
 
   const activation = await Activation.findOne({
@@ -17,8 +19,7 @@ const isActivated = async (req: Request, res: Response, next: NextFunction) => {
   });
   if (activation && activation.completed) return next();
 
-  res.status(200);
-  res.render('pages/welcome.ejs', { name: user.name });
+  res.status(200).render('pages/welcome.ejs', { name: user.name });
 };
 
 export default isActivated;

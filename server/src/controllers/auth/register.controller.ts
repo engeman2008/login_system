@@ -45,13 +45,14 @@ class RegisterController {
 
   public resendEmail = async (req: Request, res: Response): Promise<void> => {
     const user = req.user as typeof User;
-    console.log('hhhhhhhh');
+    console.log(user);
     const activation = await Activation.findOne({
       where: { user_id: user.id },
     });
+    res.render('pages/welcome.ejs', { name: user.name });
+
     const MailOptions = await this.prepareMail(req, user, activation);
     sendEmail(MailOptions, () => {});
-    res.redirect('/');
   }
 
   private isValidRequest = async (req: Request) => {
@@ -78,7 +79,7 @@ class RegisterController {
 
     return {
       from: '"Eman Mohammed" <eman.cse2008@gmail.com>',
-      to: req.body.email,
+      to: user.email,
       subject: 'AVL Account verification',
       html: data,
     };
