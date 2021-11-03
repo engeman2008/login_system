@@ -9,8 +9,7 @@ const Activation = db.activations;
 class UserController {
     public profile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
       const { user } = req;
-
-      res.render('pages/profile.ejs', { user });
+      res.render('pages/user/profile.ejs', { user });
     }
 
     public update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -18,7 +17,13 @@ class UserController {
       const user = await User.findByPk(userO.id);
       user.name = req.body.name;
       await user.save();
-      res.render('pages/profile.ejs', { user });
+      res.render('pages/user/profile.ejs', { user });
     }
+
+    public resetPassword =
+     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+       const { user } = req;
+       res.render('pages/user/reset-password.ejs', { user });
+     }
 }
 export default UserController;

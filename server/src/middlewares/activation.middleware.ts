@@ -19,7 +19,7 @@ const isActivated = async (req: Request, res: Response, next: NextFunction) => {
   });
   if (activation && activation.completed) return next();
 
-  res.status(200).render('pages/welcome.ejs', { name: user.name });
+  res.status(200).render('pages/user/welcome.ejs', { name: user.name });
 };
 
 export default isActivated;

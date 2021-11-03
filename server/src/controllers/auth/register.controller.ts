@@ -37,7 +37,7 @@ class RegisterController {
       req.flash('error', result.message);
       return res.redirect('/signup');
     }
-    res.render('pages/welcome.ejs', { name: result.user.name });
+    res.render('pages/user/welcome.ejs', { name: result.user.name });
 
     const MailOptions = await this.prepareMail(req, result.user, result.activation);
     sendEmail(MailOptions, () => {});
@@ -49,7 +49,7 @@ class RegisterController {
     const activation = await Activation.findOne({
       where: { user_id: user.id },
     });
-    res.render('pages/welcome.ejs', { name: user.name });
+    res.render('pages/user/welcome.ejs', { name: user.name });
 
     const MailOptions = await this.prepareMail(req, user, activation);
     sendEmail(MailOptions, () => {});

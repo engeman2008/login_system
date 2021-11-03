@@ -7,12 +7,18 @@ import db from '../models/index';
 
 const User = db.users;
 
-passport.serializeUser((user, done) => {
-  done(null, user);
+passport.serializeUser((user: typeof User, done) => {
+  done(null, user.id);
 });
 
-passport.deserializeUser((user: any, done) => {
-  done(null, user);
+passport.deserializeUser((userId, done) => {
+  User
+    .findByPk(userId)
+    .then((user: typeof User) => {
+      done(null, user);
+    }).catch((err: any) => {
+      done(err, null);
+    });
 });
 
 passport.use(
