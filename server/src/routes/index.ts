@@ -8,6 +8,7 @@ import ActivateController from '../controllers/auth/activate.controller';
 import DashboardController from '../controllers/dashboard.controller';
 import ErrorController from '../controllers/error.controller';
 import UserController from '../controllers/user.controller';
+import { resetPasswordRules, vRegisterRules, validate } from '../controllers/validator';
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router.get('/login', loginController.getLogin);
 router.post('/login', loginController.postLogin);
 
 router.get('/signup', registerController.getSignup);
-router.post('/signup', registerController.postSignup);
+router.post('/signup', vRegisterRules(), registerController.postSignup);
 
 router.get('/logout', loginController.postLogout);
 router.get('/activate/:userId/:activationCode', activateController.activate);
@@ -40,8 +41,11 @@ router.get('/activate/:userId/:activationCode', activateController.activate);
 router.get('/send-verify-email', connectEnsureLogin.ensureLoggedIn(), registerController.resendEmail);
 router.get('/welcome', connectEnsureLogin.ensureLoggedIn(), dashboardController.welcome);
 router.get('/dashboard', connectEnsureLogin.ensureLoggedIn(), dashboardController.index);
+
 router.get('/profile', connectEnsureLogin.ensureLoggedIn(), userController.profile);
 router.post('/profile', connectEnsureLogin.ensureLoggedIn(), userController.update);
-router.get('/reset-password', connectEnsureLogin.ensureLoggedIn(), userController.resetPassword);
+
+router.get('/reset-password', connectEnsureLogin.ensureLoggedIn(), userController.getResetPassword);
+router.post('/reset-password', connectEnsureLogin.ensureLoggedIn(), resetPasswordRules(), userController.postResetPassword);
 
 export default router;

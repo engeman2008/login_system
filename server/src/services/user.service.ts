@@ -28,8 +28,21 @@ class UserService {
       completed: false,
     });
     // if (!activation) {} should delete user
-
     return { user, activation, message: 'User Created' };
+  }
+
+  public static async update(userId: any, newData: any) {
+    const user = await User.findByPk(userId);
+
+    try {
+      // await user.save();
+      await user.update(newData);
+    } catch (error) {
+      if (!user) {
+        return { user: null, message: 'Failed to update, please try again' };
+      }
+    }
+    return { user, message: 'Updated' };
   }
 }
 export default UserService;

@@ -16,13 +16,16 @@
               class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
               <h1 class="h2">Welcome <%= user.name%>.</h1>
             </div>
-            <form action="" method="POST">
-                <div class="mb-3">
-                  <label for="exampleInputEmail1" class="form-label">Your name</label>
-                  <input type="text" class="form-control" value="<%= user.name %>" id="name" name="name" >
+            <form action="/profile" method="POST">
+              <%- include('../../partials/flash_messages'); %>
+              <div class="mb-3 row">
+                <label for="staticEmail" class="col-sm-2 col-form-label">Your name</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" value="<%= user.name %>" id="name" name="name">
                 </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-              </form>
+              </div>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </form>
           </main>
       </div>
     </div>

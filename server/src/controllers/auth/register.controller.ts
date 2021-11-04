@@ -1,18 +1,11 @@
-/* eslint-disable prefer-promise-reject-errors */
-/* eslint-disable no-unused-vars */
-/* eslint-disable consistent-return */
 import { Request, Response } from 'express';
-import {
-  validationResult, check,
-  body, CustomValidator,
-} from 'express-validator';
 
 import ejs from 'ejs';
 import path from 'path';
 
 import { sendEmail } from '../../utils/utils';
 import UserService from '../../services/user.service';
-import { isEmailExists } from '../custom.validator';
+import { validate } from '../validator';
 
 import db from '../../models/index';
 
@@ -29,7 +22,7 @@ class RegisterController {
   }
 
   public postSignup = async (req: Request, res: Response): Promise<void> => {
-    const isValidRequest = await this.isValidRequest(req);
+    const isValidRequest = validate(req);
     if (!isValidRequest) return res.redirect('/signup');
 
     const result = await UserService.newUser(req.body);
@@ -53,24 +46,6 @@ class RegisterController {
 
     const MailOptions = await this.prepareMail(req, user, activation);
     sendEmail(MailOptions, () => {});
-  }
-
-  private isValidRequest = async (req: Request) => {
-    await check('name', 'Username must be at least 2 chars long.').isLength({ min: 2 }).run(req);
-    await check('email', 'Email is not valid').isEmail().custom(isEmailExists).run(req);
-    await check('password', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i').run(req);
-    await check('confirmPassword', 'Passwords do not match').equals(req.body.password).run(req);
-
-    const errors = validationResult(req);
-
-    if (errors.isEmpty()) return true;
-    const extractedErrors: any = [];
-
-    errors.array().map((err) => extractedErrors.push(`${err.param} : ${err.msg}`));
-    req.flash('error', extractedErrors);
-    req.flash('oldInput', req.body);
-
-    return false;
   }
 
   private prepareMail = async (req: Request, user: any, activation: any) => {

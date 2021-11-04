@@ -34,7 +34,7 @@ passport.use(
         include: ['activations'],
       });
       if (!user) {
-        return done(null, false, { message: `Email ${username} not found.` });
+        return done(null, false, { message: 'Email not found.' });
       }
 
       bcrypt.compare(password, user.password, (err, res) => {
