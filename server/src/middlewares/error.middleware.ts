@@ -5,7 +5,7 @@ const errorMiddleware = (err: any, req: Request, res: Response, next: NextFuncti
     return next(err);
   }
   res.status(500);
-  res.render('errors/error', { error: err });
+  return res.render('errors/error', { error: err });
 };
 
 export default errorMiddleware;

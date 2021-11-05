@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { Request, Response } from 'express';
 
 import ejs from 'ejs';

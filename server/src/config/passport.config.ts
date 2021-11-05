@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable consistent-return */
 import bcrypt from 'bcryptjs';
 import passport from 'passport';
