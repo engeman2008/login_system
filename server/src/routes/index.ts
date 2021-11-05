@@ -2,13 +2,14 @@ import { Router } from 'express';
 import connectEnsureLogin from 'connect-ensure-login';
 
 import LoginController from '../controllers/auth/login.controller';
+
 import RegisterController from '../controllers/auth/register.controller';
 import ActivateController from '../controllers/auth/activate.controller';
 
 import DashboardController from '../controllers/dashboard.controller';
 import ErrorController from '../controllers/error.controller';
 import UserController from '../controllers/user.controller';
-import { resetPasswordRules, vRegisterRules, validate } from '../controllers/validator';
+import { resetPasswordRules, vRegisterRules } from '../controllers/validator';
 
 const router = Router();
 
@@ -34,6 +35,12 @@ router.post('/login', loginController.postLogin);
 
 router.get('/signup', registerController.getSignup);
 router.post('/signup', vRegisterRules(), registerController.postSignup);
+
+router.get('/auth/facebook', loginController.getFacebookLogin);
+router.get('/auth/facebook/callback', loginController.handleFacebookLogin);
+
+router.get('/auth/google', loginController.getGoogleLogin);
+router.get('/auth/google/callback', loginController.handleGoogleLogin);
 
 router.get('/logout', loginController.postLogout);
 router.get('/activate/:userId/:activationCode', activateController.activate);

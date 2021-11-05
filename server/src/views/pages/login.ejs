@@ -15,10 +15,10 @@
         <form class="form-signin" method="POST" action="/login">
             <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
             <div class="social-login">
-                <button class="btn facebook-btn social-btn" type="button"><span><i class="fab fa-facebook-f"></i> Sign
-                        in with Facebook</span> </button>
-                <button class="btn google-btn social-btn" type="button"><span><i class="fab fa-google-plus-g"></i> Sign
-                        in with Google+</span> </button>
+                <a class="btn facebook-btn social-btn" href="/auth/facebook" >
+                    <span><i class="fab fa-facebook-f"></i> Sign in with Facebook</span> </a>
+                <a class="btn google-btn social-btn" herf="/auth/google" >
+                    <span><i class="fab fa-google-plus-g"></i> Sign in with Google+</span> </a>
             </div>
             <p style="text-align:center"> OR </p>
             <input type="email" name="email" id="email" class="form-control" placeholder="Email address" required=""

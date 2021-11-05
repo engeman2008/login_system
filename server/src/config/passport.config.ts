@@ -2,6 +2,8 @@
 import bcrypt from 'bcryptjs';
 import passport from 'passport';
 import passportLocal from 'passport-local';
+import passportFacebook from 'passport-facebook';
+import passportGoogle from 'passport-google-oauth';
 
 import db from '../models/index';
 
@@ -43,6 +45,58 @@ passport.use(
         }
         return done(null, false, { message: 'Invalid email or password.' });
       });
+    }),
+  ),
+);
+// passport.use(new passportFacebook.Strategy({
+//   clientID: process.env.FACEBOOK_APP_ID as string,
+//   clientSecret: process.env.FACEBOOK_APP_SECRET as string,
+//   callbackURL: process.env.FACEBOOK_APP_CALLBACK_URL as string,
+// },
+//   function (accessToken, refreshToken, profile, done) {
+//     User.findOrCreate(..., function (err, user) {
+//       if (err) { return done(err); }
+//       done(null, user);
+//     });
+//   }
+// ));
+console.log(process.env.FACEBOOK_APP_ID);
+passport.use(
+  new passportFacebook.Strategy(
+    {
+      clientID: process.env.FACEBOOK_APP_ID as string,
+      clientSecret: process.env.FACEBOOK_APP_SECRET as string,
+      callbackURL: process.env.FACEBOOK_APP_CALLBACK_URL as string,
+    },
+    (async (accessToken, refreshToken, profile, cb) => {
+      const [user, status] = await User.findOrCreate({
+        where: {
+          social_user_id: profile.id,
+          name: profile.displayName,
+          registration_type: 'facebook',
+        },
+      });
+      cb(null, user);
+    }),
+  ),
+);
+
+passport.use(
+  new passportGoogle.OAuthStrategy(
+    {
+      consumerKey: process.env.GOOGLE_CLIENT_ID as string,
+      consumerSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      callbackURL: process.env.GOOGLE_APP_CALLBACK_URL as string,
+    },
+    (async (accessToken, refreshToken, profile, cb) => {
+      const [user, status] = await User.findOrCreate({
+        where: {
+          social_user_id: profile.id,
+          name: profile.displayName,
+          registration_type: 'google',
+        },
+      });
+      cb(null, user);
     }),
   ),
 );
