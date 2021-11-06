@@ -1,64 +1,55 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const express_validator_1 = require("express-validator");
-const bcryptjs_1 = tslib_1.__importDefault(require("bcryptjs"));
-const passport_1 = tslib_1.__importDefault(require("passport"));
-const user_service_1 = tslib_1.__importDefault(require("../../services/user.service"));
-const { User } = require('../../models/index');
+const ejs_1 = (0, tslib_1.__importDefault)(require("ejs"));
+const path_1 = (0, tslib_1.__importDefault)(require("path"));
+const utils_1 = require("../../utils/utils");
+const user_service_1 = (0, tslib_1.__importDefault)(require("../../services/user.service"));
+const validator_1 = require("../validator");
+const index_1 = (0, tslib_1.__importDefault)(require("../../models/index"));
+const User = index_1.default.users;
+const Activation = index_1.default.activations;
 class RegisterController {
     constructor() {
-        this.userService = new user_service_1.default();
-        this.getSignup = (req, res, next) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+        this.getSignup = (req, res) => (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
             if (req.user) {
                 return res.redirect('/');
             }
-            res.render('pages/signup.ejs');
+            const oldInput = req.flash('oldInput')[0];
+            res.render('pages/signup.ejs', { messages: req.flash('error'), oldInput });
         });
-        this.postSignup = (req, res, next) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-            console.log('hi');
-            const isEmailExists = (value) => User.findOne({ where: { email: value } })
-                .then((existingUser) => {
-                if (existingUser) {
-                    return Promise.reject('E-mail is already in use.');
-                }
-            });
-            yield express_validator_1.check('name', 'Username must be at least 2 chars long.').isLength({ min: 2 }).run(req);
-            yield express_validator_1.check('email', 'Email is not valid').isEmail().custom(isEmailExists).run(req);
-            yield express_validator_1.check('password', 'Password must be at least 4 characters long').isLength({ min: 4 }).run(req);
-            yield express_validator_1.check('confirmPassword', 'Passwords do not match').equals(req.body.password).run(req);
-            const errors = express_validator_1.validationResult(req);
-            if (!errors.isEmpty()) {
-                req.flash('errors', errors.array());
+        this.postSignup = (req, res) => (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+            const isValidRequest = (0, validator_1.validate)(req);
+            if (!isValidRequest)
+                return res.redirect('/signup');
+            const result = yield user_service_1.default.newUser(req.body);
+            if (!result.user) {
+                req.flash('error', result.message);
                 return res.redirect('/signup');
             }
-            const hashed = yield bcryptjs_1.default.hash(req.body.password, 10);
-            const user = yield User.create({
-                name: req.body.name,
-                email: req.body.email,
-                password: hashed,
-                registration_type: 'email',
+            res.render('pages/user/welcome.ejs', { name: result.user.name });
+            const MailOptions = yield this.prepareMail(req, result.user, result.activation);
+            (0, utils_1.sendEmail)(MailOptions, () => { });
+        });
+        this.resendEmail = (req, res) => (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+            const user = req.user;
+            console.log(user);
+            const activation = yield Activation.findOne({
+                where: { user_id: user.id },
             });
-            console.log(`created user is ${user.name}`);
-            passport_1.default.authenticate('local', (err, userr, info) => {
-                if (err) {
-                    return next(err);
-                }
-                if (!user) {
-                    return res.redirect('/login');
-                }
-                req.logIn(user, (error) => {
-                    if (error) {
-                        return next(err);
-                    }
-                    return res.redirect('/');
-                });
-            })(req, res, next);
+            res.render('pages/user/welcome.ejs', { name: user.name });
+            const MailOptions = yield this.prepareMail(req, user, activation);
+            (0, utils_1.sendEmail)(MailOptions, () => { });
         });
-        this.forgetPassword = (req, res, next) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-            res.render('pages/reset-password.ejs');
-        });
-        this.resetPassword = (req, res, next) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+        this.prepareMail = (req, user, activation) => (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+            const link = `http://${req.headers.host}/activate/${user.id}/${activation.code}`;
+            const data = yield ejs_1.default.renderFile(path_1.default.join(__dirname, '../..', 'views/emails/verification.ejs'), { link, user });
+            return {
+                from: '"Eman Mohammed" <eman.cse2008@gmail.com>',
+                to: user.email,
+                subject: 'AVL Account verification',
+                html: data,
+            };
         });
     }
 }

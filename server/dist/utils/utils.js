@@ -1,29 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isEmpty = exports.deepCopy = void 0;
-const deepCopy = (target) => {
-    if (target === null) {
-        return target;
-    }
-    if (target instanceof Date) {
-        return new Date(target.getTime());
-    }
-    if (Array.isArray(target)) {
-        const cp = [];
-        target.forEach((v) => {
-            cp.push(v);
-        });
-        return cp.map((n) => exports.deepCopy(n));
-    }
-    if (typeof target === 'object' && target !== {}) {
-        const cp = Object.assign({}, target);
-        Object.keys(cp).forEach((k) => {
-            cp[k] = exports.deepCopy(cp[k]);
-        });
-        return cp;
-    }
-    return target;
+exports.sendEmail = void 0;
+const tslib_1 = require("tslib");
+const email_config_1 = (0, tslib_1.__importDefault)(require("../config/email.config"));
+const sendEmail = (MailOptions, callback) => {
+    email_config_1.default.sendMail(MailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        }
+        else {
+            console.log(`Message sent: ${info.response}`);
+            callback();
+        }
+    });
 };
-exports.deepCopy = deepCopy;
-const isEmpty = (val) => val == null || !(Object.keys(val) || val).length;
-exports.isEmpty = isEmpty;
+exports.sendEmail = sendEmail;

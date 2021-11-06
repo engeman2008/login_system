@@ -1,13 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const errorMiddleware = (error, req, res, next) => {
-    try {
-        const status = error.status || 500;
-        const message = error.message || 'Something went wrong';
-        res.status(status).json({ message });
+const errorMiddleware = (err, req, res, next) => {
+    if (res.headersSent) {
+        return next(err);
     }
-    catch (errorM) {
-        next(errorM);
-    }
+    res.status(500);
+    return res.render('errors/error', { error: err });
 };
 exports.default = errorMiddleware;

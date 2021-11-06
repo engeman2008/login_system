@@ -1,2 +1,1 @@
-export declare const deepCopy: <T>(target: T) => T;
-export declare const isEmpty: (val: any) => boolean;
+export declare const sendEmail: (MailOptions: {}, callback: any) => void;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const userModel = (sequelize, Sequelize) => {
+exports.default = (sequelize, Sequelize) => {
     const User = sequelize.define('users', {
         name: {
             type: Sequelize.STRING,
@@ -9,10 +9,10 @@ const userModel = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
         },
         social_user_id: {
-            type: Sequelize.BOOLEAN,
+            type: Sequelize.STRING,
         },
         password: {
-            type: Sequelize.BOOLEAN,
+            type: Sequelize.STRING,
         },
         registration_type: {
             type: Sequelize.ENUM('email', 'google', 'facebook'),
@@ -21,4 +21,3 @@ const userModel = (sequelize, Sequelize) => {
     });
     return User;
 };
-exports.default = userModel;

@@ -1,10 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import UserService from '../../services/user.service';
+import { Request, Response } from 'express';
 declare class RegisterController {
-    userService: UserService;
-    getSignup: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-    postSignup: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-    forgetPassword: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-    resetPassword: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getSignup: (req: Request, res: Response) => Promise<void>;
+    postSignup: (req: Request, res: Response) => Promise<void>;
+    resendEmail: (req: Request, res: Response) => Promise<void>;
+    private prepareMail;
 }
 export default RegisterController;
