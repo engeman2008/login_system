@@ -70,6 +70,7 @@ passport.use(
       callbackURL: process.env.FACEBOOK_APP_CALLBACK_URL as string,
     },
     (async (accessToken, refreshToken, profile, cb) => {
+      console.log(profile.id);
       const [user, status] = await User.findOrCreate({
         where: {
           social_user_id: profile.id,
