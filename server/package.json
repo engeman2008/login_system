@@ -8,6 +8,7 @@
     "copy-assets": "ts-node tools/copyAssets",
     "lint": "eslint . --ext .ts",
     "prebuild": "eslint . --ext .ts --config .eslintrc",
+    "tsc": "tsc",
     "build": "npm-run-all clean lint tsc copy-assets",
     "postinstall": "tsc && mv -i -v src/public dist",
     "prestart": "npm run build",
