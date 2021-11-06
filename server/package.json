@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "prebuild": "eslint . --ext .ts --config .eslintrc",
-    "build": "tsc && mv -i -v public dist",
+    "build": "tsc && mv -i -v src/public dist",
     "prestart": "npm run build",
     "start": "node .",
     "watch": "npx nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/app.ts\""
