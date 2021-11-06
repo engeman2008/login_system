@@ -24,10 +24,7 @@ class LoginController {
   }
 
   public getFacebookLogin =
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log('here');
-    passport.authenticate('facebook');
-  }
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => passport.authenticate('facebook')
 
   public handleFacebookLogin =
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -46,10 +43,7 @@ class LoginController {
   }
 
   public getGoogleLogin =
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log('google');
-    passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' });
-  }
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' })
 
   public handleGoogleLogin =
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {

@@ -30,7 +30,6 @@ class ActivateController {
       console.log(error);
       next(error as string);
     }
-    console.log('The account has been verified. Please log in.');
 
     passport.authenticate('local', (err, userr, info) => {
       if (err) {

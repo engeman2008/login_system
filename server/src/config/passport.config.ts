@@ -49,19 +49,6 @@ passport.use(
     }),
   ),
 );
-// passport.use(new passportFacebook.Strategy({
-//   clientID: process.env.FACEBOOK_APP_ID as string,
-//   clientSecret: process.env.FACEBOOK_APP_SECRET as string,
-//   callbackURL: process.env.FACEBOOK_APP_CALLBACK_URL as string,
-// },
-//   function (accessToken, refreshToken, profile, done) {
-//     User.findOrCreate(..., function (err, user) {
-//       if (err) { return done(err); }
-//       done(null, user);
-//     });
-//   }
-// ));
-console.log(process.env.FACEBOOK_APP_ID);
 passport.use(
   new passportFacebook.Strategy(
     {

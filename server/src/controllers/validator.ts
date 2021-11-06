@@ -36,8 +36,6 @@ export const resetPasswordRules = () => [
   body('newPassword', 'Password must include one lowercase character, one uppercase character, a number, and a special character.').matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i'),
   body('confirmNewPassword', 'Passwords do not match').custom(async (confirmNewPassword, { req }) => {
     const { newPassword } = req.body;
-    console.log(newPassword);
-    console.log(confirmNewPassword);
 
     if (newPassword !== confirmNewPassword) {
       throw new Error('Passwords do not match');

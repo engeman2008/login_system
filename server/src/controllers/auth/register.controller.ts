@@ -39,7 +39,6 @@ class RegisterController {
 
   public resendEmail = async (req: Request, res: Response): Promise<void> => {
     const user = req.user as typeof User;
-    console.log(user);
     const activation = await Activation.findOne({
       where: { user_id: user.id },
     });
