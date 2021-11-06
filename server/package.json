@@ -4,9 +4,11 @@
   "description": "Users can sign up and sign in from a landing page into a simple dashboard",
   "main": "dist/app.js",
   "scripts": {
+    "clean": "rimraf dist/*",
+    "copy-assets": "ts-node tools/copyAssets",
     "lint": "eslint . --ext .ts",
     "prebuild": "eslint . --ext .ts --config .eslintrc",
-    "build": "tsc",
+    "build": "npm-run-all clean lint tsc copy-assets",
     "postinstall": "tsc && mv -i -v src/public dist",
     "prestart": "npm run build",
     "start": "node .",
@@ -45,7 +47,8 @@
     "passport-google-oauth": "^2.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "sequelize": "^6.8.0"
+    "sequelize": "^6.8.0",
+    "shelljs": "^0.8.4"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -65,12 +68,15 @@
     "@types/passport-facebook": "^2.1.11",
     "@types/passport-google-oauth": "^1.0.42",
     "@types/passport-local": "^1.0.34",
+    "@types/shelljs": "^0.8.9",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
     "eslint": "^7.29.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
     "nodemon": "^2.0.7",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.4"
   }
